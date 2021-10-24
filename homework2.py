@@ -69,12 +69,12 @@ def main():
         counter22 = 0
         counter21 = 0
 
-        testData = []
-        trainData = []
         accuraciesDepth = []
         accuraciesAllFeatures = []
 
         for train, test in Res.split(data):
+            testData = []
+            trainData = []
             accuracyAuxDepthTest = 0
             accuracyAuxDepthTrain = 0
             accuracyAuxAllFeaturesTest = 0
