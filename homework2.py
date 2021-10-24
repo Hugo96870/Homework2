@@ -1,7 +1,6 @@
 # Grupo 117 Aprendizagem HomeWork 2
 # Bernardo Castico ist196845
 # Hugo Rita ist196870
-
 from sklearn import tree
 from sklearn.model_selection import KFold
 from sklearn.feature_selection import SelectKBest
@@ -41,20 +40,9 @@ def splitData(list):
         b.append(i[-1])
     return [a,b]
 
-
 def main():
-    depthTestX = []
-    depthTestY = []
-    depthTrainX = []
-    depthTrainY = []
-    AllFeaturesTestX = []
-    AllFeaturesTestY = []
-    AllFeaturesTrainX = []
-    AllFeaturesTrainY = []
-
-    res = []
-    finalAccuraciesDepth = []
-    finalAccuraciesAllFeatures = []
+    depthTestX, finalAccuraciesAllFeatures, finalAccuraciesDepth, res , AllFeaturesTrainY, AllFeaturesTrainX = [],[],[],[],[],[]
+    depthTestY , AllFeaturesTestY, AllFeaturesTestX, depthTrainY, depthTrainX = [],[],[],[],[]
 
     with open("HW2.txt") as f:
         lines = f.readlines()
@@ -64,21 +52,13 @@ def main():
     data = getDataToMatrix(res)
 
     for i in [1,3,5,9]:
-        counter11 = 0
-        counter12 = 0
-        counter22 = 0
-        counter21 = 0
-
-        accuraciesDepth = []
-        accuraciesAllFeatures = []
+        counter11, counter12, counter21, counter22 = 0,0,0,0
+        accuraciesDepth, accuraciesAllFeatures = [],[]
 
         for train, test in Res.split(data):
-            testData = []
-            trainData = []
-            accuracyAuxDepthTest = 0
-            accuracyAuxDepthTrain = 0
-            accuracyAuxAllFeaturesTest = 0
-            accuracyAuxAllFeaturesTrain = 0
+            testData, trainData = [],[]
+            accuracyAuxDepthTest, accuracyAuxDepthTrain = 0,0
+            accuracyAuxAllFeaturesTest, accuracyAuxAllFeaturesTrain = 0,0
 
             for j in test:
                 testData += [data[j]]
@@ -94,31 +74,27 @@ def main():
             resultDepth = tree.DecisionTreeClassifier(max_depth=i, criterion="gini", max_features=None)
             resultAllFeatures = tree.DecisionTreeClassifier(max_depth=None, criterion="gini", max_features=None)
 
-
             resultDepth.fit(trainDataSplit[0], trainDataSplit[1])
             resultAllFeatures.fit(decisionTrainData, trainDataSplit[1])
 
             predictionsTest = resultDepth.predict(testDataSplit[0])
             predictionsTrain = resultDepth.predict(trainDataSplit[0])
 
-            for j in range(len(predictionsTest)):
+            predictionsTestFeatures = resultAllFeatures.predict(decisionTestData)
+            predictionsTrainFeatures = resultAllFeatures.predict(decisionTrainData)
+
+            for j in range(len(predictionsTestFeatures)):
+                if predictionsTestFeatures[j] == testDataSplit[1][j]:
+                    accuracyAuxAllFeaturesTest += 1
                 if predictionsTest[j] == testDataSplit[1][j]:
                     accuracyAuxDepthTest += 1
-            for j in range(len(predictionsTrain)):
+            for j in range(len(predictionsTrainFeatures)):
+                if predictionsTrainFeatures[j] == trainDataSplit[1][j]:
+                    accuracyAuxAllFeaturesTrain += 1
                 if predictionsTrain[j] == trainDataSplit[1][j]:
                     accuracyAuxDepthTrain += 1
-            accuraciesDepth += [[accuracyAuxDepthTest/len(predictionsTest), accuracyAuxDepthTrain/len(predictionsTrain)]]
-
-            predictionsTest = resultAllFeatures.predict(decisionTestData)
-            predictionsTrain = resultAllFeatures.predict(decisionTrainData)
-
-            for j in range(len(predictionsTest)):
-                if predictionsTest[j] == testDataSplit[1][j]:
-                    accuracyAuxAllFeaturesTest += 1
-            for j in range(len(predictionsTrain)):
-                if predictionsTrain[j] == trainDataSplit[1][j]:
-                    accuracyAuxAllFeaturesTrain += 1
-            accuraciesAllFeatures += [[accuracyAuxAllFeaturesTest/len(predictionsTest), accuracyAuxAllFeaturesTrain/len(predictionsTrain)]]
+            accuraciesAllFeatures += [[accuracyAuxAllFeaturesTest/len(predictionsTestFeatures), accuracyAuxAllFeaturesTrain/len(predictionsTrainFeatures)]]
+            accuraciesDepth += [[accuracyAuxDepthTest / len(predictionsTest), accuracyAuxDepthTrain / len(predictionsTrain)]]
 
         for k in range(len(accuraciesDepth)):
             counter11 += accuraciesDepth[k][0]
@@ -128,10 +104,6 @@ def main():
 
         finalAccuraciesDepth += [[counter11 / 10, counter12 / 10]]
         finalAccuraciesAllFeatures += [[counter21 / 10, counter22 / 10]]
-
-    print(finalAccuraciesDepth)
-    print(finalAccuraciesAllFeatures)
-
     #Plot
     for i in range(4):
         depthTestX = [1,3,5,9]
@@ -151,7 +123,5 @@ def main():
     plt.plot(AllFeaturesTestX, AllFeaturesTestY, label = "All Features test")
     plt.plot(AllFeaturesTrainX, AllFeaturesTrainY, label = "All Features train")
     plt.legend()
-
     plt.show()
-
 main()
