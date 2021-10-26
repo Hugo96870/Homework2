@@ -106,15 +106,6 @@ def main():
         finalAccuraciesDepth += [[counter11 / 10, counter12 / 10]]
         finalAccuraciesAllFeatures += [[counter21 / 10, counter22 / 10]]
 
-    for i in range(4):
-        x += [finalAccuraciesDepth[i][0]]
-        y += [finalAccuraciesAllFeatures[i][0]]
-    print(x)
-    print(y)
-
-    r = np.corrcoef(x, y)
-    print(r)
-
     #Plot
     for i in range(4):
         depthTestX = [1,3,5,9]
