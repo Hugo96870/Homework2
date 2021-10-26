@@ -6,6 +6,7 @@ from sklearn.model_selection import KFold
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import mutual_info_classif
 import matplotlib.pyplot as plt
+import numpy as np
 
 #Res = the 10-fold cross validation with our group number (117)
 Res = KFold(n_splits=10, random_state=117, shuffle=True)
@@ -42,7 +43,7 @@ def splitData(list):
 
 def main():
     depthTestX, finalAccuraciesAllFeatures, finalAccuraciesDepth, res , AllFeaturesTrainY, AllFeaturesTrainX = [],[],[],[],[],[]
-    depthTestY , AllFeaturesTestY, AllFeaturesTestX, depthTrainY, depthTrainX = [],[],[],[],[]
+    depthTestY , AllFeaturesTestY, AllFeaturesTestX, depthTrainY, depthTrainX, x, y = [],[],[],[],[],[],[]
 
     with open("HW2.txt") as f:
         lines = f.readlines()
@@ -104,6 +105,16 @@ def main():
 
         finalAccuraciesDepth += [[counter11 / 10, counter12 / 10]]
         finalAccuraciesAllFeatures += [[counter21 / 10, counter22 / 10]]
+
+    for i in range(4):
+        x += [finalAccuraciesDepth[i][0]]
+        y += [finalAccuraciesAllFeatures[i][0]]
+    print(x)
+    print(y)
+
+    r = np.corrcoef(x, y)
+    print(r)
+
     #Plot
     for i in range(4):
         depthTestX = [1,3,5,9]
@@ -115,13 +126,13 @@ def main():
         AllFeaturesTrainX = [1, 3, 5, 9]
         AllFeaturesTrainY += [finalAccuraciesAllFeatures[i][1]]
 
-    plt.xlabel('Depth/AllFeatures')
+    plt.xlabel('Depth/Features')
     plt.ylabel('Accuracies')
     plt.title('AP HW2')
-    plt.plot(depthTestX, depthTestY, label = "depth test")
-    plt.plot(depthTrainX, depthTrainY, label = "depth train")
-    plt.plot(AllFeaturesTestX, AllFeaturesTestY, label = "All Features test")
-    plt.plot(AllFeaturesTrainX, AllFeaturesTrainY, label = "All Features train")
+    plt.plot(depthTestX, depthTestY, label = "Depth test")
+    plt.plot(depthTrainX, depthTrainY, label = "Depth train")
+    plt.plot(AllFeaturesTestX, AllFeaturesTestY, label = "Features test")
+    plt.plot(AllFeaturesTrainX, AllFeaturesTrainY, label = "Features train")
     plt.legend()
     plt.show()
 main()
